@@ -61,6 +61,10 @@
       font-size: 13px;
       color: #0066cc;
       white-space: nowrap;
+      cursor: pointer;
+    }
+    .ref:hover {
+      text-decoration: underline;
     }
     .term-sl { font-weight: 500; }
     .term-en { color: #444; }
@@ -209,7 +213,7 @@ function renderTable(terms) {
   
   tbody.innerHTML = terms.map((t, i) => `
     <tr class="expandable" data-idx="${i}">
-      <td class="ref">${t.std}:${t.ref}</td>
+      <td class="ref" title="Klikni za kopiranje povezave" onclick="event.stopPropagation(); copyLinkToClipboard('${t.std}:${t.ref}', this)">${t.std}:${t.ref}</td>
       <td class="term-sl">${t.sl || '—'}</td>
       <td class="term-en">${t.en}</td>
       <td><span class="category-tag">${t.cat}</span></td>
@@ -266,6 +270,44 @@ renderTable(TERMS);
 search.addEventListener('input', filter);
 stdFilter.addEventListener('change', filter);
 catFilter.addEventListener('change', filter);
+
+// ============ DEEP LINKING ============
+function openTermFromHash() {
+  const hash = window.location.hash.slice(1);
+  if (!hash) return;
+  
+  const ref = decodeURIComponent(hash);
+  const idx = TERMS.findIndex(t => `${t.std}:${t.ref}` === ref);
+  if (idx >= 0) {
+    // Clear filters to show the term
+    search.value = '';
+    stdFilter.value = '';
+    catFilter.value = '';
+    renderTable(TERMS);
+    
+    // Expand and scroll
+    setTimeout(() => {
+      const def = document.getElementById(`def-${idx}`);
+      if (def) {
+        def.classList.add('show');
+        def.closest('tr').previousElementSibling.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  }
+}
+
+function copyLinkToClipboard(ref, el) {
+  const url = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(ref)}`;
+  navigator.clipboard.writeText(url).then(() => {
+    const original = el.textContent;
+    el.textContent = '✓ skopirano';
+    setTimeout(() => el.textContent = original, 1500);
+  });
+}
+
+// Handle initial hash
+openTermFromHash();
+window.addEventListener('hashchange', openTermFromHash);
 </script>
 </body>
 </html>
