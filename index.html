@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slovenska terminologija UI in informacijske varnosti</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #fafafa;
+      color: #222;
+    }
+    h1 { margin-bottom: 5px; }
+    .subtitle { color: #666; margin-bottom: 20px; }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 250px;
+    }
+    select {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      background: white;
+    }
+    .stats { color: #666; font-size: 13px; margin-bottom: 10px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background: #f5f5f5;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      color: #555;
+    }
+    tr:hover { background: #f9f9f9; }
+    .ref {
+      font-family: "SF Mono", Monaco, monospace;
+      font-size: 13px;
+      color: #0066cc;
+      white-space: nowrap;
+    }
+    .term-sl { font-weight: 500; }
+    .term-en { color: #444; }
+    .category-tag {
+      font-size: 11px;
+      background: #e8e8e8;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #555;
+    }
+    .expandable { cursor: pointer; }
+    .expandable:hover .term-sl { color: #0066cc; }
+    .definition {
+      display: none;
+      padding: 12px;
+      background: #f8f8f8;
+      border-left: 3px solid #0066cc;
+      margin: 5px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .definition.show { display: block; }
+    .def-text { margin-bottom: 10px; }
+    .def-text:last-child { margin-bottom: 0; }
+    .see-also { font-size: 12px; color: #666; }
+    .see-also a { color: #0066cc; text-decoration: none; }
+    .see-also a:hover { text-decoration: underline; }
+    .notes {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: #fff8e6;
+      border-left: 3px solid #e6a800;
+      font-size: 13px;
+      color: #664d00;
+    }
+    .no-results { padding: 40px; text-align: center; color: #888; }
+  </style>
+</head>
+<body>
+  <h1>Terminološki slovar UI in informacijske varnosti</h1>
+  <p class="subtitle">Slovenska terminologija usklajena z ISO 22989 / 27000</p>
+  
+  <div class="controls">
+    <input type="text" id="search" placeholder="Išči po terminu ali referenci...">
+    <select id="stdFilter">
+      <option value="">Vsi standardi</option>
+      <option value="22989">ISO/IEC 22989 (UI)</option>
+      <option value="27000">ISO/IEC 27000 (Varnost)</option>
+    </select>
+    <select id="catFilter">
+      <option value="">Vse kategorije</option>
+    </select>
+  </div>
+  
+  <div class="stats" id="stats"></div>
+  
+  <table>
+    <thead>
+      <tr>
+        <th style="width:100px">Ref</th>
+        <th>Slovenščina</th>
+        <th>English</th>
+        <th style="width:120px">Category</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+<script id="csv-data" type="text/csv">
+std,ref,cat,en,sl,def_sl,notes,see_also
+22989,3.1.1,3.1 AI,AI agent,agent UI,"Avtomatizirana entiteta, ki zaznava svoje okolje, se nanj odziva in izvaja dejanja za doseganje svojih ciljev.","Agent ≠ model. Agent je sistem, ki ima dostop do orodij (e-pošta, internet, datoteke) in lahko samostojno izvaja akcije. Model sam po sebi ne more ničesar — potrebuje sistem, ki ga poganja.",22989:3.1.4
+22989,3.1.2,3.1 AI,AI component,komponenta UI,"Funkcionalni element, ki gradi sistem UI.",,22989:3.1.4
+22989,3.1.3,3.1 AI,artificial intelligence,umetna inteligenca,"Raziskave in razvoj mehanizmov ter aplikacij sistemov UI.",,
+22989,3.1.4,3.1 AI,AI system,sistem UI,"Inženirski sistem, ki ustvarja rezultate kot so vsebine, napovedi, priporočila ali odločitve za določen nabor človekovo opredeljenih ciljev.","Sistem UI = celoten sklop: model + inferenčni pogon + API-ji + varnostne plasti + beleženje. To je tisto, kar ureja ISO 42001.",22989:3.1.1|22989:3.1.2
+22989,3.1.7,3.1 AI,automation,avtomatizacija,"Nanaša se na proces ali sistem, ki pod določenimi pogoji deluje brez človeškega posredovanja.",,
+22989,3.2.1,3.2 Data,data,podatki,"Ponovno interpretabilna predstavitev informacij v formalizirani obliki, primerni za komunikacijo, interpretacijo ali obdelavo.",,
+22989,3.3.1,3.3 ML,model,model,"Matematični konstrukt, ki na podlagi vhodnih podatkov generira izhod na osnovi naučenih parametrov.","Model je datoteka (ali skupina datotek) — uteži, arhitektura, tokenizer. Sam po sebi ne 'dela' ničesar. Potrebujemo programsko opremo za uporabo modela.",22989:3.3.2
+22989,3.5.1,3.5 Trust,trustworthiness,zaupanja vrednost,"Sposobnost izpolnjevanja pričakovanj deležnikov na preverljiv način.",,
+27000,3.1,Security,access control,nadzor dostopa,"Sredstva za zagotavljanje, da je dostop do sredstev avtoriziran in omejen glede na poslovne in varnostne zahteve.",,
+27000,3.2,Security,asset,sredstvo,"Karkoli, kar ima vrednost za organizacijo.",,
+27000,3.56,Security,risk,tveganje,Učinek negotovosti na cilje.,,27000:3.57
+</script>
+
+<script>
+// ============ CSV PARSER ============
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = parseCSVLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const values = parseCSVLine(line);
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = values[i] || '');
+    return obj;
+  });
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+// ============ LOAD DATA ============
+const csvText = document.getElementById('csv-data').textContent;
+const TERMS = parseCSV(csvText).map(row => ({
+  std: row.std,
+  ref: row.ref,
+  cat: row.cat,
+  en: row.en,
+  sl: row.sl,
+  def_sl: row.def_sl,
+  notes: row.notes,
+  see_also: row.see_also ? row.see_also.split('|') : []
+}));
+
+// ============ RENDER ============
+const tbody = document.getElementById('tbody');
+const search = document.getElementById('search');
+const stdFilter = document.getElementById('stdFilter');
+const catFilter = document.getElementById('catFilter');
+const stats = document.getElementById('stats');
+
+function getUniqueCats() {
+  return [...new Set(TERMS.map(t => t.cat))].sort();
+}
+
+function populateCatFilter() {
+  const cats = getUniqueCats();
+  cats.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    catFilter.appendChild(opt);
+  });
+}
+
+function renderTable(terms) {
+  if (terms.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="no-results">Ni najdenih terminov</td></tr>';
+    stats.textContent = '0 terminov';
+    return;
+  }
+  stats.textContent = `${terms.length} termin${terms.length === 1 ? '' : terms.length === 2 ? 'a' : terms.length < 5 ? 'i' : 'ov'}`;
+  
+  tbody.innerHTML = terms.map((t, i) => `
+    <tr class="expandable" data-idx="${i}">
+      <td class="ref">${t.std}:${t.ref}</td>
+      <td class="term-sl">${t.sl || '—'}</td>
+      <td class="term-en">${t.en}</td>
+      <td><span class="category-tag">${t.cat}</span></td>
+    </tr>
+    <tr class="def-row" data-idx="${i}">
+      <td colspan="4">
+        <div class="definition" id="def-${i}">
+          ${t.def_sl ? `<div class="def-text">${t.def_sl}</div>` : '<div class="def-text">—</div>'}
+          ${t.notes ? `<div class="notes">${t.notes}</div>` : ''}
+          ${t.see_also?.length ? `<div class="see-also">Glej tudi: ${t.see_also.map(r => `<a href="#" data-ref="${r}">${r}</a>`).join(', ')}</div>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  
+  document.querySelectorAll('.expandable').forEach(row => {
+    row.addEventListener('click', () => {
+      const idx = row.dataset.idx;
+      document.getElementById(`def-${idx}`).classList.toggle('show');
+    });
+  });
+  
+  document.querySelectorAll('.see-also a').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      search.value = a.dataset.ref;
+      filter();
+    });
+  });
+}
+
+function filter() {
+  const q = search.value.toLowerCase();
+  const std = stdFilter.value;
+  const cat = catFilter.value;
+  
+  const filtered = TERMS.filter(t => {
+    if (std && t.std !== std) return false;
+    if (cat && t.cat !== cat) return false;
+    if (q) {
+      const fullRef = `${t.std}:${t.ref}`.toLowerCase();
+      const match = fullRef.includes(q) || t.ref.toLowerCase().includes(q) ||
+        t.en.toLowerCase().includes(q) || (t.sl && t.sl.toLowerCase().includes(q));
+      if (!match) return false;
+    }
+    return true;
+  });
+  renderTable(filtered);
+}
+
+populateCatFilter();
+renderTable(TERMS);
+search.addEventListener('input', filter);
+stdFilter.addEventListener('change', filter);
+catFilter.addEventListener('change', filter);
+</script>
+</body>
+</html>

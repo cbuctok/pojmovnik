@@ -1,0 +1,10 @@
+{
+  "name": "iso-slovar",
+  "version": "0.1.0",
+  "description": "Slovenska terminologija UI in informacijske varnosti",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "author": "",
+  "license": "CC-BY-4.0"
+}
